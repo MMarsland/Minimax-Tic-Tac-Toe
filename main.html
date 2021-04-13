@@ -5,11 +5,17 @@
       <script src="Script.js"></script>
       <script src="Minimax.js"></script>
     </head>
-    <body onload="onload()">
+    <body>
         <div id="main">
           <div id="home">
             <div id="infoArea">
+              <p>Choose your character:</p>
+              <div id="play-selection">
+                <button id="play-x" onclick="playX()">X</button>
+                <button id="play-o" onclick="playO()">O</button>
+              </div>
               <div id="nextTurn">Next Player: X</div>
+              <div id="thinking">Your Move</div>
             </div>
             <div id="playArea">
               <div class="square" id="id0" onclick="squareClicked(0)"></div>
@@ -22,7 +28,7 @@
               <div class="square" id="id7" onclick="squareClicked(7)"></div>
               <div class="square" id="id8" onclick="squareClicked(8)"></div>
             </div>
-          </div
+          </div>
         </div>
     </body>
 </html>

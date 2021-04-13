@@ -1,11 +1,23 @@
-// BOARD IS COL-ROW
-let gameBoard = "000000000";
+// GLOBALS
+let gameBoard = "000000000"; //The Board is Col-Row
 let currentPlayer = 1;
 let winner = null;
 
-// UI functions
-function onload() {
-  start();
+// UI FUNCTIONS
+function playO() {
+  gameBoard = "000000000";
+  currentPlayer = 1;
+  winner = null;
+  updateViewToGameBoard();
+  makeAIMove();
+}
+
+function playX() {
+  gameBoard = "000000000";
+  currentPlayer = 1;
+  winner = null;
+  updateViewToGameBoard();
+  document.getElementById("thinking").innerHTML = "Your Move";
 }
 
 function updateView(board, player) {
@@ -17,47 +29,40 @@ function updateView(board, player) {
 
 function updateViewToGameBoard() {
   updateView(gameBoard, currentPlayer);
+
+  winner = checkForWin(gameBoard);
+  if (winner) {
+    document.getElementById("nextTurn").innerHTML = winner==1?"Winner: X":(winner == 2? "Winner: O": "Tie Game!");
+    document.getElementById("thinking").innerHTML = "Game Over";
+    return true;
+  }
 }
 
-async function start() {
-  let action = await getActionByMinimax(currentPlayer, gameBoard);
-  gameBoard = placeInSquare(gameBoard, action, currentPlayer);
-  currentPlayer = currentPlayer % 2 + 1;
-  updateViewToGameBoard();
+async function makeAIMove() {
+  document.getElementById("thinking").innerHTML = "The AI is thinking...";
+  setTimeout(async function() {
+    let action = await getActionByMinimax(currentPlayer, gameBoard);
+    document.getElementById("thinking").innerHTML = "Your Move";
+    gameBoard = placeInSquare(gameBoard, action, currentPlayer);
+    currentPlayer = currentPlayer % 2 + 1;
+    updateViewToGameBoard();
+  }, 200);
 }
 
 async function squareClicked(square) {
-  //console.log(square);
   if (squareFull(gameBoard, square) || winner) {return;}
   gameBoard = placeInSquare(gameBoard, square, currentPlayer);
   currentPlayer = currentPlayer % 2 + 1;
   updateViewToGameBoard();
-  //console.log(gameBoard);
-  winner = checkForWin(gameBoard);
-  //console.log(winner);
-  if (winner) {
-    document.getElementById("nextTurn").innerHTML = winner==1?"Winner: X":(winner == 2? "Winner: O": "Tie Game!");
-    return;
-  }
-
-
-  let action = await getActionByMinimax(currentPlayer, gameBoard);
-  gameBoard = placeInSquare(gameBoard, action, currentPlayer);
-  currentPlayer = currentPlayer % 2 + 1;
-  updateViewToGameBoard();
-
-  winner = checkForWin(gameBoard);
-  //console.log(winner);
-  if (winner) {
-    document.getElementById("nextTurn").innerHTML = winner==1?"Winner: X":(winner == 2? "Winner: O": "Tie Game!");
-    return;
+  
+  // AI's Turn if game not over
+  if (winner == null) {
+    makeAIMove();
   }
 }
-// END
 
 // GAME FUNCTIONS
 function placeInSquare(board, square, player) {
-  //if (show) {console.log(board + " " +square+ " " + player);}
   return board.substr(0, square) + (player==0?"0":(player==1?"1":"2")) + board.substr(square+1);
 }
 
@@ -88,15 +93,12 @@ function checkForWin(board) {
   if (board[0] != "0" && board[0] == board[4] && board[0] == board[8]) { return board[0] };
   if (board[6] != "0" && board[6] == board[4] && board[6] == board[2]) { return board[6] };
 
-  // Tie
   if (boardFull(board)) {
     return 3;
   }
 
-  // No winner
   return null;
 }
-//END
 
 //SYSTEM FUNCTIONS
 function sleep(ms) {
@@ -108,4 +110,3 @@ function getRandInt(min, max) {
     let random = (Math.floor(Math.random() * (realMax-min)) + min);
     return random;
 }
-//END
